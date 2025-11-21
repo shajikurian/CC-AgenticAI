@@ -1,0 +1,49 @@
+<project ...>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.aotoza</groupId>
+  <artifactId>aotoza-support-agent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <google-adk.version>0.3.0</google-adk.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.adk</groupId>
+      <artifactId>google-adk</artifactId>
+      <version>${google-adk.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.adk</groupId>
+      <artifactId>google-adk-dev</artifactId>
+      <version>${google-adk.version}</version>
+    </dependency>
+
+    <!-- JSON parsing (choose one: Jackson, Gson etc.) -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.20.1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Needed for ToolContext parameter reflection in FunctionTool -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <parameters>true</parameters>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
