@@ -79,7 +79,7 @@ Used in complaint workflow:
 
 ## 🏛 High-Level Architecture
 ```mermaid
-graph LR
+graph TD
     User[User] --> API[Spring Boot REST API /api/support/chat]
     API --> Runner[ADK InMemoryRunner]
     Runner --> Root[RootRouterAgent]
