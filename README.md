@@ -80,23 +80,22 @@ Used in complaint workflow:
 ## 🏛 High-Level Architecture
 ```mermaid
 graph LR
-    User(Start) --> API[Spring Boot REST API (/api/support/chat)]
+    User[User] --> API[Spring Boot REST API /api/support/chat]
     API --> Runner[ADK InMemoryRunner]
     Runner --> Root[RootRouterAgent]
-    
+
     Root -->|Ride-related query| RideAgent[RideSupportAgent]
     Root -->|General question| GeneralAgent[GeneralSupportAgent]
     Root -->|Complaint detected| ComplaintWorkflow[Complaint Workflow Agent]
-    
-    ComplaintWorkflow --> Draft[DraftAgent]
-    ComplaintWorkflow --> Loop[LoopAgent]
-    Loop --> Critic[CriticAgent]
-    Loop --> Refiner[RefinerAgent]
-    Loop -->|refined| ComplaintWorkflow
-    
-    RideAgent --> Tool[get_user_ride_summary Tool]
-    Tool --> rides.json
 
+    ComplaintWorkflow --> Draft[ComplaintDraftAgent]
+    ComplaintWorkflow --> Loop[ComplaintRefinementLoop]
+    Loop --> Critic[ComplaintCriticAgent]
+    Loop --> Refiner[ComplaintRefinerAgent]
+    Loop -->|Refined draft| ComplaintWorkflow
+
+    RideAgent --> Tool[get_user_ride_summary Tool]
+    Tool --> RidesFile["rides.json"]
 ```
 ## 🧩 Agent Hierarchy
 
@@ -117,34 +116,33 @@ F --> H[ComplaintRefinerAgent]
 ## 🔄 Complaint Refinement Flow (Sequence)
 ```mermaid
 sequenceDiagram
-    participant User
-    participant API
-    participant Root
-    participant Workflow
-    participant Draft
-    participant Loop
-    participant Critic
-    participant Refiner
+    participant U as User
+    participant A as API
+    participant R as RootRouter
+    participant W as Workflow
+    participant D as DraftAgent
+    participant L as LoopProcessor
+    participant C as CriticAgent
+    participant F as RefinerAgent
 
-    User->>API: "I want to complain about my last ride"
-    API->>Root: User message
-    Root->>Workflow: Delegate (complaint detected)
+    U->>A: I want to complain about my last ride
+    A->>R: User message
+    R->>W: Complaint detected
 
-    Workflow->>Draft: Create initial draft
-    Draft-->>Workflow: draft text
+    W->>D: Create initial draft
+    D-->>W: Draft text
 
-    Workflow->>Loop: Start refinement (max=3)
+    W->>L: Start refinement (max = 3)
 
-    Loop->>Critic: Evaluate draft
-    Critic-->>Loop: critique
+    L->>C: Evaluate draft
+    C-->>L: Critique
 
-    Loop->>Refiner: Improve draft
-    Refiner-->>Loop: refined draft
+    L->>F: Improve draft
+    F-->>L: Refined draft
 
-    Loop-->>Workflow: final refined response
-    Workflow-->>API: send refined reply
-    API-->>User: Final polished complaint resolution
-
+    L-->>W: Final refined response
+    W-->>A: Send refined reply
+    A-->>U: Final polished complaint resolution
 ```
 
 ## 📁 Project Structure
